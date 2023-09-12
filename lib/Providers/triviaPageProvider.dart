@@ -11,12 +11,19 @@ class TriviaPageProvider extends ChangeNotifier {
   final String _difficulty = "easy";
   final String _questionType = "multiple";
 
-  List? questions;
+  List? questions; // List of Questions
 
-  int currentQuestion = 0;
-  int score = 0;
+  int currentQuestion = 0; // index of current question
+  int score = 0; // Score
 
-  String answerState = "none";
+  List currentAnswers = []; // Answers of current question
+
+  List<Color> listColors = [
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+  ];
 
   TriviaPageProvider({required this.context}) {
     _dio.options.baseUrl = "https://opentdb.com/api.php";
@@ -49,28 +56,40 @@ class TriviaPageProvider extends ChangeNotifier {
   }
 
   List getCurrentQuestionAnswers() {
-    List answers = [];
-    answers.add(questions![currentQuestion]["correct_answer"]);
-    answers.addAll(questions![currentQuestion]["incorrect_answers"]);
-    // TODO answers keeps shuffling after clicking on answer
-    answers.shuffle();
-    return answers;
+    if (currentAnswers.isEmpty) {
+      currentAnswers.add(questions![currentQuestion]["correct_answer"]);
+      currentAnswers.addAll(questions![currentQuestion]["incorrect_answers"]);
+      currentAnswers.shuffle();
+    }
+    return currentAnswers;
   }
 
-  void answerQuestion(String answer) async {
-    bool isCorrect = questions![currentQuestion]["correct_answer"] == answer;
+  void answerQuestion(int index) async {
+    String chosenAnswer = currentAnswers[index]; // get the chosen answer
+    bool isCorrect =
+        questions![currentQuestion]["correct_answer"] == chosenAnswer;
     if (isCorrect) {
-      answerState = "correct";
+      listColors[index] = Colors.green;
     } else {
-      answerState = "incorrect";
+      listColors[index] = Colors.red;
+      int indexOfCorrectAnswer =
+          currentAnswers.indexOf(questions![currentQuestion]["correct_answer"]);
+      listColors[indexOfCorrectAnswer] = Colors.green;
     }
-    Future.delayed(const Duration(seconds: 1)).then((value) => jumpToNextQuestion());
+    Future.delayed(const Duration(seconds: 1))
+        .then((value) => goToNextQuestion());
     notifyListeners();
   }
 
-  void jumpToNextQuestion() {
+  void goToNextQuestion() {
     currentQuestion++;
-    answerState = "none";
+    listColors = [
+      Colors.grey,
+      Colors.grey,
+      Colors.grey,
+      Colors.grey,
+    ];
+    currentAnswers = [];
     notifyListeners();
   }
 }

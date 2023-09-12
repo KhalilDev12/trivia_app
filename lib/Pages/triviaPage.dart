@@ -14,6 +14,7 @@ class TriviaPage extends StatefulWidget {
 class _TriviaPageState extends State<TriviaPage> {
   late double deviceHeight, deviceWidth;
   late TriviaPageProvider _triviaPageProvider;
+  late List answersList;
 
   @override
   void initState() {
@@ -67,14 +68,14 @@ class _TriviaPageState extends State<TriviaPage> {
       children: [
         _questionText(),
         _answersButtons(),
-        _triviaPageProvider.answerState != "none"
+        /*_triviaPageProvider.answerState != "none"
             ? Column(
                 children: [
                   _resultText(),
                   //_nextButton(),
                 ],
               )
-            : Container(),
+            : Container(),*/
       ],
     );
   }
@@ -92,12 +93,12 @@ class _TriviaPageState extends State<TriviaPage> {
   }
 
   Widget _answersButtons() {
-    List shuffledAnswersList = _triviaPageProvider.getCurrentQuestionAnswers();
+    answersList = _triviaPageProvider.getCurrentQuestionAnswers();
     return SizedBox(
       width: deviceWidth,
       height: deviceHeight * 0.4,
       child: GridView.builder(
-        itemCount: shuffledAnswersList.length,
+        itemCount: answersList.length,
         gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
           mainAxisExtent: deviceHeight * 0.1,
           maxCrossAxisExtent: deviceWidth * 0.5,
@@ -107,11 +108,11 @@ class _TriviaPageState extends State<TriviaPage> {
         itemBuilder: (context, index) {
           return MaterialButton(
             onPressed: () {
-              _triviaPageProvider.answerQuestion(shuffledAnswersList[index]);
+              _triviaPageProvider.answerQuestion(index);
             },
-            color: Colors.grey,
+            color: _triviaPageProvider.listColors[index],
             child: Text(
-              shuffledAnswersList[index],
+              answersList[index],
               textAlign: TextAlign.center,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
@@ -123,39 +124,6 @@ class _TriviaPageState extends State<TriviaPage> {
             ),
           );
         },
-      ),
-    );
-  }
-
-  Widget _resultText() {
-    return Container(
-      width: deviceWidth * 0.6,
-      decoration: BoxDecoration(
-        color: _triviaPageProvider.answerState == "correct"
-            ? Colors.green
-            : Colors.red,
-        borderRadius: BorderRadius.circular(deviceHeight * 0.02),
-      ),
-      padding: EdgeInsets.all(deviceHeight * 0.01),
-      child: Text(
-        _triviaPageProvider.answerState == "correct" ? "Correct" : "Incorrect",
-        style: TextStyle(fontSize: deviceHeight * 0.04, color: Colors.white),
-        textAlign: TextAlign.center,
-      ),
-    );
-  }
-
-  Widget _nextButton() {
-    return TextButton(
-      onPressed: () {
-        _triviaPageProvider.jumpToNextQuestion();
-      },
-      child: Text(
-        "Next Question",
-        style: TextStyle(
-          fontSize: deviceHeight * 0.025,
-          color: Colors.white,
-        ),
       ),
     );
   }
