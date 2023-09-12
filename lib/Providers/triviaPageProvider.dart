@@ -14,6 +14,9 @@ class TriviaPageProvider extends ChangeNotifier {
   List? questions;
 
   int currentQuestion = 0;
+  int score = 0;
+
+  String answerState = "none";
 
   TriviaPageProvider({required this.context}) {
     _dio.options.baseUrl = "https://opentdb.com/api.php";
@@ -37,20 +40,37 @@ class TriviaPageProvider extends ChangeNotifier {
   }
 
   String getCurrentQuestionText() {
-    return questions![currentQuestion]["question"];
+    // Get The Question
+    String question = questions![currentQuestion]["question"];
+    // Replace the Special Characters
+    String modifiedQuestion =
+        question.replaceAll("&quot;", "\"").replaceAll("&#039;", "'");
+    return modifiedQuestion;
   }
 
   List getCurrentQuestionAnswers() {
     List answers = [];
     answers.add(questions![currentQuestion]["correct_answer"]);
     answers.addAll(questions![currentQuestion]["incorrect_answers"]);
+    // TODO answers keeps shuffling after clicking on answer
+    answers.shuffle();
     return answers;
   }
 
   void answerQuestion(String answer) async {
     bool isCorrect = questions![currentQuestion]["correct_answer"] == answer;
+    if (isCorrect) {
+      answerState = "correct";
+    } else {
+      answerState = "incorrect";
+    }
+    Future.delayed(const Duration(seconds: 1)).then((value) => jumpToNextQuestion());
+    notifyListeners();
+  }
+
+  void jumpToNextQuestion() {
     currentQuestion++;
-    print(isCorrect ? "Correct " : "Incorrect");
+    answerState = "none";
     notifyListeners();
   }
 }

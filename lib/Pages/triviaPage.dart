@@ -62,11 +62,19 @@ class _TriviaPageState extends State<TriviaPage> {
   Widget _gameUI() {
     return Column(
       mainAxisSize: MainAxisSize.max,
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         _questionText(),
         _answersButtons(),
+        _triviaPageProvider.answerState != "none"
+            ? Column(
+                children: [
+                  _resultText(),
+                  //_nextButton(),
+                ],
+              )
+            : Container(),
       ],
     );
   }
@@ -85,7 +93,6 @@ class _TriviaPageState extends State<TriviaPage> {
 
   Widget _answersButtons() {
     List shuffledAnswersList = _triviaPageProvider.getCurrentQuestionAnswers();
-    shuffledAnswersList.shuffle();
     return SizedBox(
       width: deviceWidth,
       height: deviceHeight * 0.4,
@@ -105,6 +112,7 @@ class _TriviaPageState extends State<TriviaPage> {
             color: Colors.grey,
             child: Text(
               shuffledAnswersList[index],
+              textAlign: TextAlign.center,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
@@ -115,6 +123,39 @@ class _TriviaPageState extends State<TriviaPage> {
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget _resultText() {
+    return Container(
+      width: deviceWidth * 0.6,
+      decoration: BoxDecoration(
+        color: _triviaPageProvider.answerState == "correct"
+            ? Colors.green
+            : Colors.red,
+        borderRadius: BorderRadius.circular(deviceHeight * 0.02),
+      ),
+      padding: EdgeInsets.all(deviceHeight * 0.01),
+      child: Text(
+        _triviaPageProvider.answerState == "correct" ? "Correct" : "Incorrect",
+        style: TextStyle(fontSize: deviceHeight * 0.04, color: Colors.white),
+        textAlign: TextAlign.center,
+      ),
+    );
+  }
+
+  Widget _nextButton() {
+    return TextButton(
+      onPressed: () {
+        _triviaPageProvider.jumpToNextQuestion();
+      },
+      child: Text(
+        "Next Question",
+        style: TextStyle(
+          fontSize: deviceHeight * 0.025,
+          color: Colors.white,
+        ),
       ),
     );
   }
