@@ -5,12 +5,13 @@ import 'package:dio/dio.dart';
 
 class TriviaPageProvider extends ChangeNotifier {
   final Dio _dio = Dio();
-  BuildContext context;
+  BuildContext context; // context needed to show dialog
 
   final int _maxQuestions = 10;
-  late String difficulty;
-
   final String _questionType = "multiple";
+
+  late String difficulty; // Selected Difficulty
+  int? category; // Selected Category
 
   List? questions; // List of Questions
 
@@ -26,7 +27,11 @@ class TriviaPageProvider extends ChangeNotifier {
     Colors.grey,
   ];
 
-  TriviaPageProvider({required this.context, required this.difficulty}) {
+  TriviaPageProvider({
+    required this.context,
+    required this.difficulty,
+    required this.category,
+  }) {
     _dio.options.baseUrl = "https://opentdb.com/api.php";
     _getQuestionsFromAPI();
   }
@@ -34,11 +39,18 @@ class TriviaPageProvider extends ChangeNotifier {
   Future<void> _getQuestionsFromAPI() async {
     var response = await _dio.get(
       '',
-      queryParameters: {
-        "amount": _maxQuestions,
-        "difficulty": difficulty,
-        "type": _questionType,
-      },
+      queryParameters: category != null
+          ? {
+              "amount": _maxQuestions,
+              "difficulty": difficulty,
+              "type": _questionType,
+              "category": category,
+            }
+          : {
+              "amount": _maxQuestions,
+              "difficulty": difficulty,
+              "type": _questionType,
+            },
     );
 
     var data = jsonDecode(response.toString());

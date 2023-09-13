@@ -3,9 +3,11 @@ import 'package:provider/provider.dart';
 import 'package:trivia_app/Providers/triviaPageProvider.dart';
 
 class TriviaPage extends StatefulWidget {
+  int? category;
   late String difficulty;
 
-  TriviaPage({required this.difficulty, Key? key}) : super(key: key);
+  TriviaPage({required this.difficulty, required this.category, Key? key})
+      : super(key: key);
 
   @override
   _TriviaPageState createState() {
@@ -34,8 +36,11 @@ class _TriviaPageState extends State<TriviaPage> {
     deviceWidth = MediaQuery.of(context).size.width;
 
     return ChangeNotifierProvider(
-      create: (context) =>
-          TriviaPageProvider(context: context, difficulty: widget.difficulty),
+      create: (context) => TriviaPageProvider(
+        context: context,
+        difficulty: widget.difficulty,
+        category: widget.category,
+      ),
       child: _buildUI(),
     );
   }
@@ -70,14 +75,7 @@ class _TriviaPageState extends State<TriviaPage> {
       children: [
         _questionText(),
         _answersButtons(),
-        /*_triviaPageProvider.answerState != "none"
-            ? Column(
-                children: [
-                  _resultText(),
-                  //_nextButton(),
-                ],
-              )
-            : Container(),*/
+        _exitButton(),
       ],
     );
   }
@@ -126,6 +124,27 @@ class _TriviaPageState extends State<TriviaPage> {
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget _exitButton() {
+    return Align(
+      alignment: Alignment.bottomRight,
+      child: Container(
+        padding: EdgeInsets.all(deviceHeight * 0.02),
+        decoration:
+            const BoxDecoration(color: Colors.red, shape: BoxShape.circle),
+        child: GestureDetector(
+          onTap: () {
+            Navigator.pop(context);
+          },
+          child: Icon(
+            Icons.exit_to_app,
+            color: Colors.white,
+            size: deviceHeight * 0.04,
+          ),
+        ),
       ),
     );
   }

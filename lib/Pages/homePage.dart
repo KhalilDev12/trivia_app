@@ -16,6 +16,28 @@ class _HomePageState extends State<HomePage> {
   late TriviaPageProvider _triviaPageProvider;
   double _difficultyLvl = 0;
   List<String> difficulty = ["Easy", "Medium", "Hard"];
+  List<String> categoryList = [
+    "Any Category",
+    "Books",
+    "Films",
+    "Music",
+    "Video Games",
+    "Sports",
+    "Geography",
+    "History",
+  ]; // List of Categories
+  List categoryCode = [
+    null,
+    10,
+    11,
+    12,
+    15,
+    21,
+    22,
+    23,
+  ]; // List of Codes of Categories
+  String _selectedCategory = "Any Category";
+  int? _selectedCategoryCode;
 
   @override
   void initState() {
@@ -48,11 +70,14 @@ class _HomePageState extends State<HomePage> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 _titleText(),
-                Column(children: [
-                  _difficultyText(),
-                  SizedBox(height: deviceHeight * 0.02),
-                  _difficultySlider(),
-                ]),
+                Column(
+                  children: [
+                    _difficultyText(),
+                    _difficultySlider(),
+                    _categoryText(),
+                    _categoryDropDown(),
+                  ],
+                ),
                 _startButton(),
               ]),
         ),
@@ -72,17 +97,17 @@ class _HomePageState extends State<HomePage> {
 
   Widget _difficultyText() {
     return Text(
-      difficulty[_difficultyLvl.toInt()],
+      "Choose the Difficulty:",
       style: TextStyle(
         color: Colors.white,
-        fontSize: deviceHeight * 0.03,
+        fontSize: deviceHeight * 0.035,
       ),
     );
   }
 
   Widget _difficultySlider() {
     return Slider(
-      label: "Difficulty",
+      label: difficulty[_difficultyLvl.toInt()],
       value: _difficultyLvl,
       onChanged: (value) {
         setState(() {
@@ -95,6 +120,42 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  Widget _categoryText() {
+    return Text(
+      "Choose the Category:",
+      style: TextStyle(
+        color: Colors.white,
+        fontSize: deviceHeight * 0.035,
+      ),
+    );
+  }
+
+  Widget _categoryDropDown() {
+    return DropdownButton(
+      value: _selectedCategory,
+      iconEnabledColor: Colors.white,
+      style: TextStyle(
+          color: Colors.deepPurple,
+          fontSize: deviceHeight * 0.03,
+          fontFamily: "ArchitectsDaughter"),
+      items: categoryList
+          .map(
+            (value) => DropdownMenuItem(
+              value: value,
+              child: Text(value),
+            ),
+          )
+          .toList(),
+      onChanged: (newValue) {
+        setState(() {
+          _selectedCategory = newValue!;
+          int categoryIndex = categoryList.indexOf(newValue);
+          _selectedCategoryCode = categoryCode[categoryIndex];
+        });
+      },
+    );
+  }
+
   Widget _startButton() {
     return MaterialButton(
       minWidth: deviceWidth * 0.6,
@@ -104,7 +165,9 @@ class _HomePageState extends State<HomePage> {
           context,
           MaterialPageRoute(
             builder: (context) => TriviaPage(
-                difficulty: difficulty[_difficultyLvl.toInt()].toLowerCase()),
+              difficulty: difficulty[_difficultyLvl.toInt()].toLowerCase(),
+              category: _selectedCategoryCode,
+            ),
           ),
         );
       },
