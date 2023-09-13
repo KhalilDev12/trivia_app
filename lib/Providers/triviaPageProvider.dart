@@ -8,7 +8,8 @@ class TriviaPageProvider extends ChangeNotifier {
   BuildContext context;
 
   final int _maxQuestions = 10;
-  final String _difficulty = "easy";
+  late String difficulty;
+
   final String _questionType = "multiple";
 
   List? questions; // List of Questions
@@ -25,7 +26,7 @@ class TriviaPageProvider extends ChangeNotifier {
     Colors.grey,
   ];
 
-  TriviaPageProvider({required this.context}) {
+  TriviaPageProvider({required this.context, required this.difficulty}) {
     _dio.options.baseUrl = "https://opentdb.com/api.php";
     _getQuestionsFromAPI();
   }
@@ -35,7 +36,7 @@ class TriviaPageProvider extends ChangeNotifier {
       '',
       queryParameters: {
         "amount": _maxQuestions,
-        "difficulty": _difficulty,
+        "difficulty": difficulty,
         "type": _questionType,
       },
     );
@@ -70,6 +71,7 @@ class TriviaPageProvider extends ChangeNotifier {
         questions![currentQuestion]["correct_answer"] == chosenAnswer;
     if (isCorrect) {
       listColors[index] = Colors.green;
+      score++;
     } else {
       listColors[index] = Colors.red;
       int indexOfCorrectAnswer =
@@ -82,14 +84,46 @@ class TriviaPageProvider extends ChangeNotifier {
   }
 
   void goToNextQuestion() {
-    currentQuestion++;
-    listColors = [
-      Colors.grey,
-      Colors.grey,
-      Colors.grey,
-      Colors.grey,
-    ];
-    currentAnswers = [];
-    notifyListeners();
+    if (currentQuestion < 9) {
+      currentQuestion++;
+      listColors = [
+        Colors.grey,
+        Colors.grey,
+        Colors.grey,
+        Colors.grey,
+      ];
+      currentAnswers = [];
+      notifyListeners();
+    } else {
+      endGame();
+    }
+  }
+
+  void endGame() async {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: Colors.blue,
+          title: const Text(
+            "End Game!",
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 25,
+            ),
+          ),
+          content: Text(
+            "Your Score is: $score/$_maxQuestions",
+            style: const TextStyle(
+              color: Colors.black,
+              fontSize: 22,
+            ),
+          ),
+        );
+      },
+    );
+    await Future.delayed(const Duration(seconds: 2));
+    Navigator.pop(context);
+    Navigator.pop(context);
   }
 }

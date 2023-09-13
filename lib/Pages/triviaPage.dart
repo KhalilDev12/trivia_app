@@ -3,7 +3,9 @@ import 'package:provider/provider.dart';
 import 'package:trivia_app/Providers/triviaPageProvider.dart';
 
 class TriviaPage extends StatefulWidget {
-  TriviaPage({Key? key}) : super(key: key);
+  late String difficulty;
+
+  TriviaPage({required this.difficulty, Key? key}) : super(key: key);
 
   @override
   _TriviaPageState createState() {
@@ -24,7 +26,6 @@ class _TriviaPageState extends State<TriviaPage> {
   @override
   void dispose() {
     super.dispose();
-    _triviaPageProvider.dispose();
   }
 
   @override
@@ -33,7 +34,8 @@ class _TriviaPageState extends State<TriviaPage> {
     deviceWidth = MediaQuery.of(context).size.width;
 
     return ChangeNotifierProvider(
-      create: (context) => TriviaPageProvider(context: context),
+      create: (context) =>
+          TriviaPageProvider(context: context, difficulty: widget.difficulty),
       child: _buildUI(),
     );
   }
