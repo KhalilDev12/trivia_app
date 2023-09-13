@@ -54,7 +54,9 @@ class _TriviaPageState extends State<TriviaPage> {
             child: Container(
               height: deviceHeight,
               width: deviceWidth,
-              padding: EdgeInsets.symmetric(horizontal: deviceWidth * 0.02),
+              padding: EdgeInsets.symmetric(
+                  horizontal: deviceWidth * 0.04,
+                  vertical: deviceHeight * 0.02),
               child: _gameUI(),
             ),
           ),
@@ -70,12 +72,59 @@ class _TriviaPageState extends State<TriviaPage> {
   Widget _gameUI() {
     return Column(
       mainAxisSize: MainAxisSize.max,
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
+        _statsRow(),
         _questionText(),
         _answersButtons(),
         _exitButton(),
+      ],
+    );
+  }
+
+  Widget _statsRow() {
+    return Row(
+      mainAxisSize: MainAxisSize.max,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Column(
+          children: [
+            Text(
+              "Question:",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: deviceHeight * 0.035,
+              ),
+            ),
+            Text(
+              "${_triviaPageProvider.currentQuestion+1}/10",
+              style: TextStyle(
+                color: Colors.deepPurple,
+                fontSize: deviceHeight * 0.03,
+              ),
+            ),
+          ],
+        ),
+        Column(
+          children: [
+            Text(
+              "Score:",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: deviceHeight * 0.035,
+              ),
+            ),
+            Text(
+              "${_triviaPageProvider.score}",
+              style: TextStyle(
+                color: Colors.deepPurple,
+                fontSize: deviceHeight * 0.03,
+              ),
+            ),
+          ],
+        )
       ],
     );
   }

@@ -63,8 +63,12 @@ class TriviaPageProvider extends ChangeNotifier {
     // Get The Question
     String question = questions![currentQuestion]["question"];
     // Replace the Special Characters
-    String modifiedQuestion =
-        question.replaceAll("&quot;", "\"").replaceAll("&#039;", "'");
+    String modifiedQuestion = question
+        .replaceAll("&quot;", "\"")
+        .replaceAll("&#039;", "'")
+        .replaceAll("&amp;", "&")
+        .replaceAll("&uuml;", "ü")
+        .replaceAll("&ouml;", "Ö");
     return modifiedQuestion;
   }
 
@@ -73,6 +77,14 @@ class TriviaPageProvider extends ChangeNotifier {
       currentAnswers.add(questions![currentQuestion]["correct_answer"]);
       currentAnswers.addAll(questions![currentQuestion]["incorrect_answers"]);
       currentAnswers.shuffle();
+      for (var element in currentAnswers) {
+        element
+            .replaceAll("&quot;", "\"")
+            .replaceAll("&#039;", "'")
+            .replaceAll("&amp;", "&")
+            .replaceAll("&uuml;", "ü")
+            .replaceAll("&ouml;", "Ö");
+      }
     }
     return currentAnswers;
   }

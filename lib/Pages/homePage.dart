@@ -74,6 +74,7 @@ class _HomePageState extends State<HomePage> {
                   children: [
                     _difficultyText(),
                     _difficultySlider(),
+                    SizedBox(height: deviceHeight * 0.02),
                     _categoryText(),
                     _categoryDropDown(),
                   ],
